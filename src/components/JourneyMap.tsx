@@ -69,6 +69,17 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({ onNodeSelect, selectedNo
                     <p className="text-[var(--text-muted)] text-sm">
                         A curated learning path from fundamentals to production systems
                     </p>
+                    <p className="text-[var(--text-muted)] text-xs mt-3 max-w-3xl leading-relaxed">
+                        Also on Floating Pragma:{' '}
+                        <a
+                            href="https://floatingpragma.io/oph/"
+                            data-track-link="hero-oph-hub"
+                            className="text-[var(--accent-cyan)] hover:text-white transition-colors"
+                        >
+                            Observer Patch Holography
+                        </a>
+                        , Bernhard Mueller&apos;s theory-of-everything, quantum gravity, and simulation theory hub.
+                    </p>
                 </div>
             </div>
 
