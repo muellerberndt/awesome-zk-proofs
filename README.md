@@ -209,6 +209,7 @@ Podcasts, newsletters, and community programs for staying current.
 
 ### Security & Exploitation
 Soundness pitfalls, attack surfaces, and real-world exploit learnings.
+- [LearnAI — zkSync Interactive Course](https://www.uselearnai.com/chat?topic=zkSync+Era) — AI-powered personal tutor for learning zkSync from scratch through conversation
 
 - [SoK: What don't we know? Understanding Security Vulnerabilities in SNARKs](https://arxiv.org/abs/2402.15293) - Systematization-of-knowledge paper surveying real-world SNARK vulnerabilities.
 - [Fuzzing Processing Pipelines for Zero-Knowledge Circuits](https://arxiv.org/abs/2411.02077) - Fuzzing study on ZK circuit pipelines and bug-finding strategies.
