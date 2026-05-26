@@ -78,7 +78,23 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({ onNodeSelect, selectedNo
                         >
                             Observer Patch Holography
                         </a>
-                        , Bernhard Mueller&apos;s theory-of-everything, quantum gravity, and simulation theory hub.
+                        , Bernhard Mueller&apos;s theory-of-everything, quantum gravity, and simulation theory hub. OPH policy:{' '}
+                        <a
+                            href="https://github.com/FloatingPragma/observer-patch-holography/blob/main/LICENSE"
+                            data-track-link="hero-oph-license"
+                            className="text-[var(--accent-cyan)] hover:text-white transition-colors"
+                        >
+                            License
+                        </a>
+                        {' / '}
+                        <a
+                            href="https://github.com/FloatingPragma/observer-patch-holography/blob/main/PATENTS.md"
+                            data-track-link="hero-oph-patents"
+                            className="text-[var(--accent-cyan)] hover:text-white transition-colors"
+                        >
+                            Anti-Patent
+                        </a>
+                        .
                     </p>
                 </div>
             </div>
