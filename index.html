@@ -7,6 +7,27 @@
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://grainy-gradients.vercel.app https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; img-src 'self' data: https://grainy-gradients.vercel.app; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;">
 
+  <meta name="theme-color" content="#08080b" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <script>
+    (function () {
+      try {
+        var forced = new URLSearchParams(location.search).get('theme');
+        if (forced === 'light' || forced === 'dark') localStorage.setItem('fp-theme', forced);
+        var stored = localStorage.getItem('fp-theme');
+        var theme = (stored === 'light' || stored === 'dark')
+          ? stored
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        document.documentElement.style.backgroundColor = theme === 'light' ? '#f7f7fb' : '#08080b';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+
   <!-- Primary Meta Tags -->
   <title>Awesome Zero-Knowledge Proofs - Curated ZK Learning Path</title>
   <meta name="title" content="Awesome Zero-Knowledge Proofs - Curated ZK Learning Path" />

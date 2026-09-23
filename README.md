@@ -11,6 +11,17 @@
 
 A curated, annotated list of primers, papers, tools, and systems for zero-knowledge proofs. This README provides a traditional "awesome list" format, while the [web version](https://floatingpragma.io/) offers an interactive learning path with three parallel tracks: **SNARKs**, **STARKs**, and **Bulletproofs/IPA**.
 
+## Contributing
+
+**This README is generated. Edits to it are overwritten on the next build.**
+
+Add your resource to [`src/data/graphData.ts`](src/data/graphData.ts) under the node it belongs to,
+then run `npm run awesome` and commit the regenerated `README.md` with your change. A pull request
+that touches only `README.md` cannot reach the website, which is built from the same source data.
+See [CONTRIBUTION.md](CONTRIBUTION.md).
+
+<!-- AWESOME_LIST:START -->
+
 ### ZKP Intuition & Introductions
 High-level intuition, core ideas, and why zero-knowledge matters.
 
@@ -215,6 +226,9 @@ Soundness pitfalls, attack surfaces, and real-world exploit learnings.
 - [Reproducing and Exploiting ZK Circuit Vulnerabilities](https://blog.zksecurity.xyz/posts/zkbugs/) - ZK/SEC writeup on reproducing real circuit bugs and exploit patterns.
 - [Specialized Zero-Knowledge Proof Failures](https://blog.trailofbits.com/2022/11/29/specialized-zero-knowledge-proof-failures/) - Trail of Bits post analyzing niche ZK failures and missing checks.
 - [Trail of Bits: Zero-Knowledge Blog Category](https://blog.trailofbits.com/categories/zero-knowledge/) - Collection of Trail of Bits posts on zero-knowledge vulnerabilities and audits.
+
+<!-- AWESOME_LIST:END -->
+
 ---
 
 © [muellerberndt](https://twitter.com/muellerberndt) · [GitHub](https://github.com/muellerberndt)

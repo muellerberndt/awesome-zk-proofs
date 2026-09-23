@@ -1,40 +1,34 @@
 import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
-import { graphData, NodeData } from '../data/graphData';
-import { ChevronRight, ExternalLink } from 'lucide-react';
+import { graphData, NodeData, Resource } from '../data/graphData';
+import { ChevronRight, ExternalLink, KeySquare, Search, X } from 'lucide-react';
 
 interface JourneyMapProps {
     onNodeSelect: (node: NodeData) => void;
     selectedNodeId: string | null;
 }
 
-// Simplified structure: sequential flow with parallel lanes
+// Sequential foundation, three parallel proof-system tracks, then applications.
 const journeyStructure = {
-    // Phase 1: Sequential foundation
     foundation: {
         title: 'Foundation',
         nodes: ['intro', 'math_foundations', 'proof_mechanics']
     },
-    // Phase 2: Parallel lanes (3 tracks)
     lanes: {
         snark: {
             title: 'SNARK',
-            color: 'green',
             nodes: ['snark_r1cs', 'snark_systems', 'snark_tooling', 'trusted_setup']
         },
         stark: {
             title: 'STARK',
-            color: 'purple',
             nodes: ['stark_trace', 'stark_systems', 'stark_tooling']
         },
         bulletproofs: {
             title: 'Bulletproofs',
-            color: 'orange',
             nodes: ['bulletproofs']
         }
     },
-    // Phase 3: Convergence
     advanced: {
         title: 'Applications',
         nodes: ['advanced', 'applications', 'security_exploitation', 'media_community']
@@ -42,39 +36,130 @@ const journeyStructure = {
 };
 
 type TrackKey = 'snark' | 'stark' | 'bulletproofs';
+type AccentColor = 'green' | 'purple' | 'cyan' | 'amber' | 'orange';
+
+const trackAccent: Record<TrackKey, AccentColor> = {
+    snark: 'green',
+    stark: 'purple',
+    bulletproofs: 'orange',
+};
+
+const accentVar: Record<AccentColor, string> = {
+    green: 'var(--accent-green)',
+    purple: 'var(--accent-purple)',
+    cyan: 'var(--accent-cyan)',
+    amber: 'var(--accent-amber)',
+    orange: 'var(--accent-orange)',
+};
+
+const washVar: Record<AccentColor, string> = {
+    green: 'var(--wash-green)',
+    purple: 'var(--wash-purple)',
+    cyan: 'var(--wash-cyan)',
+    amber: 'var(--wash-amber)',
+    orange: 'var(--wash-orange)',
+};
+
+const glowClass: Record<AccentColor, string> = {
+    green: 'glow-green',
+    purple: 'glow-purple',
+    cyan: 'glow-cyan',
+    amber: 'glow-orange',
+    orange: 'glow-orange',
+};
+
+// Each resource type gets its own accent so a long list stays scannable.
+const typeAccent: Record<string, string> = {
+    Tool: 'var(--accent-cyan)',
+    Paper: 'var(--accent-purple)',
+    Article: 'var(--accent-amber)',
+    Book: 'var(--accent-rose)',
+    Course: 'var(--accent-green)',
+    Video: 'var(--accent-orange)',
+    Podcast: 'var(--accent-orange)',
+    Newsletter: 'var(--accent-amber)',
+    Community: 'var(--accent-cyan)',
+    Program: 'var(--accent-green)',
+    Organization: 'var(--accent-rose)',
+};
+
+const accentFor = (type: string) => typeAccent[type] ?? 'var(--text-muted)';
+
+const hostOf = (url: string) => {
+    try {
+        return new URL(url).hostname.replace(/^www\./, '');
+    } catch {
+        return '';
+    }
+};
 
 export const JourneyMap: React.FC<JourneyMapProps> = ({ onNodeSelect, selectedNodeId }) => {
     const nodeMap = useMemo(() => new Map(graphData.map(node => [node.id, node])), []);
     const [activeTrack, setActiveTrack] = useState<TrackKey>('snark');
+    const [query, setQuery] = useState('');
+
+    const totals = useMemo(() => {
+        const urls = new Set<string>();
+        graphData.forEach(node => node.resources.forEach(r => urls.add(r.url)));
+        return { resources: urls.size, topics: graphData.length };
+    }, []);
 
     const getNode = (id: string) => nodeMap.get(id);
 
     const selectedNode = selectedNodeId ? getNode(selectedNodeId) : null;
 
-    // Sort resources by rating
-    const sortedResources = selectedNode
-        ? [...selectedNode.resources].sort((a, b) => b.rating - a.rating)
-        : [];
+    const sortedResources = useMemo(
+        () => (selectedNode ? [...selectedNode.resources].sort((a, b) => b.rating - a.rating) : []),
+        [selectedNode]
+    );
+
+    const needle = query.trim().toLowerCase();
+    const visibleResources = useMemo(() => {
+        if (!needle) return sortedResources;
+        return sortedResources.filter(r =>
+            `${r.title} ${r.description} ${r.type}`.toLowerCase().includes(needle)
+        );
+    }, [sortedResources, needle]);
 
     return (
-        <div className="min-h-screen bg-[var(--bg-primary)]">
+        <div className="min-h-screen">
 
-            {/* Header */}
-            <div className="pt-24 pb-8 px-6 border-b border-[var(--border-color)]">
-                <div className="max-w-7xl mx-auto">
-                    <a href="https://floatingpragma.io" className="text-[var(--text-muted)] text-xs uppercase tracking-widest hover:text-[var(--accent-primary)] transition-colors mb-4 inline-block" style={{letterSpacing: '0.15em'}}>Pragma</a>
-                    <h1 className="text-3xl md:text-4xl font-bold gradient-text mb-2">
+            {/* Hero */}
+            <div className="border-b border-[var(--border-color)] px-5 pb-10 pt-24 sm:px-6">
+                <div className="mx-auto max-w-7xl">
+                    <a
+                        href="https://floatingpragma.io"
+                        className="label mb-4 inline-block text-[var(--text-muted)] transition-colors hover:text-[var(--accent-primary)]"
+                    >
+                        Floating Pragma
+                    </a>
+                    <h1 className="gradient-text mb-3 max-w-3xl text-4xl font-extrabold leading-[1.08] tracking-tight md:text-5xl">
                         Awesome Zero-Knowledge Proofs
                     </h1>
-                    <p className="text-[var(--text-muted)] text-sm">
-                        A curated learning path from fundamentals to production systems
+                    <p className="max-w-2xl text-base leading-relaxed text-[var(--text-secondary)]">
+                        A curated learning path from the fundamentals to production proof systems.
                     </p>
-                    <p className="text-[var(--text-muted)] text-xs mt-3 max-w-3xl leading-relaxed">
+
+                    <div className="mt-6 flex flex-wrap items-center gap-2">
+                        <Stat value={totals.resources} label="resources" />
+                        <Stat value={totals.topics} label="topics" />
+                        <Stat value={3} label="tracks" />
+                    </div>
+
+                    <p className="mt-6 max-w-3xl text-xs leading-relaxed text-[var(--text-muted)]">
                         Also on Floating Pragma:{' '}
+                        <a
+                            href="https://floatingpragma.io/starklab/"
+                            data-track-link="hero-starklab"
+                            className="font-medium text-[var(--accent-purple)] underline decoration-[var(--accent-purple)]/30 underline-offset-2 transition-colors hover:decoration-[var(--accent-purple)]"
+                        >
+                            STARK Lab
+                        </a>
+                        , a step-by-step interactive tutorial, and{' '}
                         <a
                             href="https://floatingpragma.io/oph/"
                             data-track-link="hero-oph-hub"
-                            className="text-[var(--accent-cyan)] hover:text-white transition-colors"
+                            className="font-medium text-[var(--accent-cyan)] underline decoration-[var(--accent-cyan)]/30 underline-offset-2 transition-colors hover:decoration-[var(--accent-cyan)]"
                         >
                             Observer Patch Holography
                         </a>
@@ -83,221 +168,116 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({ onNodeSelect, selectedNo
                 </div>
             </div>
 
-            {/* Compact Timeline Navigation */}
-            <div className="sticky top-16 z-30 bg-[var(--bg-primary)]/95 backdrop-blur-sm border-b border-[var(--border-color)] py-4 px-6">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                        {/* Foundation nodes */}
+            {/* Compact timeline navigation */}
+            <div className="sticky top-16 z-30 border-b border-[var(--border-color)] bg-[var(--bg-primary)]/85 px-5 py-3 backdrop-blur-xl sm:px-6">
+                <div className="mx-auto max-w-7xl">
+                    <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto">
                         {journeyStructure.foundation.nodes.map((nodeId, idx) => {
                             const node = getNode(nodeId);
                             if (!node) return null;
                             return (
                                 <React.Fragment key={nodeId}>
-                                    <button
+                                    <TimelinePill
+                                        label={node.title.split(' ')[0]}
+                                        active={selectedNodeId === nodeId}
                                         onClick={() => onNodeSelect(node)}
-                                        className={clsx(
-                                            'timeline-node flex-shrink-0 px-3 py-1.5 rounded text-xs font-medium border transition-all',
-                                            selectedNodeId === nodeId
-                                                ? 'bg-[var(--accent-green)]/20 border-[var(--accent-green)] text-[var(--accent-green)] glow-green'
-                                                : 'bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-secondary)] hover:border-[var(--accent-green)]/50'
-                                        )}
-                                    >
-                                        {node.title.split(' ')[0]}
-                                    </button>
-                                    {idx < journeyStructure.foundation.nodes.length - 1 && (
-                                        <ChevronRight className="w-4 h-4 text-[var(--border-color)] flex-shrink-0" />
-                                    )}
+                                    />
+                                    {idx < journeyStructure.foundation.nodes.length - 1 && <Arrow />}
                                 </React.Fragment>
                             );
                         })}
 
-                        <ChevronRight className="w-4 h-4 text-[var(--border-color)] flex-shrink-0" />
+                        <Arrow />
 
-                        {/* SNARK/STARK/Bulletproofs track selector */}
-                        <div className="flex-shrink-0 flex items-center gap-0.5 p-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border-color)]">
-                            <button
-                                onClick={() => setActiveTrack('snark')}
-                                className={clsx(
-                                    'px-2 py-1 rounded text-[10px] font-medium transition-all',
-                                    activeTrack === 'snark'
-                                        ? 'bg-[var(--accent-green)]/20 text-[var(--accent-green)]'
-                                        : 'text-[var(--text-muted)] hover:text-[var(--accent-green)]'
-                                )}
-                            >
-                                SNARK
-                            </button>
-                            <button
-                                onClick={() => setActiveTrack('stark')}
-                                className={clsx(
-                                    'px-2 py-1 rounded text-[10px] font-medium transition-all',
-                                    activeTrack === 'stark'
-                                        ? 'bg-[var(--accent-purple)]/20 text-[var(--accent-purple)]'
-                                        : 'text-[var(--text-muted)] hover:text-[var(--accent-purple)]'
-                                )}
-                            >
-                                STARK
-                            </button>
-                            <button
-                                onClick={() => setActiveTrack('bulletproofs')}
-                                className={clsx(
-                                    'px-2 py-1 rounded text-[10px] font-medium transition-all',
-                                    activeTrack === 'bulletproofs'
-                                        ? 'bg-[var(--accent-orange)]/20 text-[var(--accent-orange)]'
-                                        : 'text-[var(--text-muted)] hover:text-[var(--accent-orange)]'
-                                )}
-                            >
-                                IPA
-                            </button>
+                        <div className="flex flex-shrink-0 items-center gap-0.5 rounded-lg border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-0.5">
+                            {(Object.keys(journeyStructure.lanes) as TrackKey[]).map(key => (
+                                <TrackButton
+                                    key={key}
+                                    compact
+                                    active={activeTrack === key}
+                                    accent={trackAccent[key]}
+                                    label={journeyStructure.lanes[key].title}
+                                    onClick={() => setActiveTrack(key)}
+                                />
+                            ))}
                         </div>
 
-                        <ChevronRight className="w-4 h-4 text-[var(--border-color)] flex-shrink-0" />
+                        <Arrow />
 
-                        {/* Advanced nodes */}
                         {journeyStructure.advanced.nodes.slice(0, 3).map((nodeId) => {
                             const node = getNode(nodeId);
                             if (!node) return null;
                             return (
-                                <button
+                                <TimelinePill
                                     key={nodeId}
+                                    label={node.title.split(' ')[0]}
+                                    active={selectedNodeId === nodeId}
                                     onClick={() => onNodeSelect(node)}
-                                    className={clsx(
-                                        'timeline-node flex-shrink-0 px-3 py-1.5 rounded text-xs font-medium border transition-all',
-                                        selectedNodeId === nodeId
-                                            ? 'bg-[var(--accent-green)]/20 border-[var(--accent-green)] text-[var(--accent-green)] glow-green'
-                                            : 'bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-secondary)] hover:border-[var(--accent-green)]/50'
-                                    )}
-                                >
-                                    {node.title.split(' ')[0]}
-                                </button>
+                                />
                             );
                         })}
                     </div>
                 </div>
             </div>
 
-            {/* Main Content Area */}
-            <div className="max-w-7xl mx-auto px-6 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main content */}
+            <div className="mx-auto max-w-7xl px-5 py-8 sm:px-6">
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
 
-                    {/* Left Column: Topic Navigation */}
-                    <div className="lg:col-span-1 space-y-6">
+                    {/* Left column: topic navigation */}
+                    <div className="space-y-6 lg:col-span-1">
 
-                        {/* Foundation Section - Vertical Progression */}
-                        <div className="space-y-1">
-                            <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">
-                                Foundation
-                            </h3>
+                        <div className="space-y-1.5">
+                            <SectionLabel>Foundation</SectionLabel>
                             {journeyStructure.foundation.nodes.map((nodeId, idx) => {
                                 const node = getNode(nodeId);
                                 if (!node) return null;
                                 return (
-                                    <div key={nodeId} className="relative">
-                                        {idx > 0 && (
-                                            <div className="absolute -top-1 left-4 w-0.5 h-2 bg-[var(--border-color)]" />
-                                        )}
-                                        <TopicCard
-                                            node={node}
-                                            isSelected={selectedNodeId === nodeId}
-                                            onClick={() => onNodeSelect(node)}
-                                            stepNumber={idx + 1}
-                                        />
-                                    </div>
+                                    <TopicCard
+                                        key={nodeId}
+                                        node={node}
+                                        isSelected={selectedNodeId === nodeId}
+                                        onClick={() => onNodeSelect(node)}
+                                        stepNumber={idx + 1}
+                                    />
                                 );
                             })}
                         </div>
 
-                        {/* Fork indicator */}
-                        <div className="flex items-center justify-center py-2">
-                            <div className="flex-1 h-px bg-[var(--border-color)]" />
-                            <span className="px-3 text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Choose your path</span>
-                            <div className="flex-1 h-px bg-[var(--border-color)]" />
+                        <Divider>Pick a proof system</Divider>
+
+                        <div className="flex gap-1 rounded-lg border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-1">
+                            {(Object.keys(journeyStructure.lanes) as TrackKey[]).map(key => (
+                                <TrackButton
+                                    key={key}
+                                    active={activeTrack === key}
+                                    accent={trackAccent[key]}
+                                    label={journeyStructure.lanes[key].title}
+                                    onClick={() => setActiveTrack(key)}
+                                />
+                            ))}
                         </div>
 
-                        {/* Track Tabs */}
-                        <div className="flex gap-1 p-1 bg-[var(--bg-tertiary)] rounded-lg">
-                            <button
-                                onClick={() => setActiveTrack('snark')}
-                                className={clsx(
-                                    'flex-1 px-3 py-2 rounded text-xs font-medium transition-all flex items-center justify-center gap-1.5',
-                                    activeTrack === 'snark'
-                                        ? 'bg-[var(--accent-green)]/20 text-[var(--accent-green)] border border-[var(--accent-green)]/50'
-                                        : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] border border-transparent'
-                                )}
-                            >
-                                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-green)]" />
-                                SNARK
-                            </button>
-                            <button
-                                onClick={() => setActiveTrack('stark')}
-                                className={clsx(
-                                    'flex-1 px-3 py-2 rounded text-xs font-medium transition-all flex items-center justify-center gap-1.5',
-                                    activeTrack === 'stark'
-                                        ? 'bg-[var(--accent-purple)]/20 text-[var(--accent-purple)] border border-[var(--accent-purple)]/50'
-                                        : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] border border-transparent'
-                                )}
-                            >
-                                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-purple)]" />
-                                STARK
-                            </button>
-                            <button
-                                onClick={() => setActiveTrack('bulletproofs')}
-                                className={clsx(
-                                    'flex-1 px-3 py-2 rounded text-xs font-medium transition-all flex items-center justify-center gap-1.5',
-                                    activeTrack === 'bulletproofs'
-                                        ? 'bg-[var(--accent-orange)]/20 text-[var(--accent-orange)] border border-[var(--accent-orange)]/50'
-                                        : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] border border-transparent'
-                                )}
-                            >
-                                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-orange)]" />
-                                IPA
-                            </button>
-                        </div>
-
-                        {/* Active Track Content */}
-                        <motion.div
-                            key={activeTrack}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.15 }}
-                            className="space-y-1"
-                        >
-                            {journeyStructure.lanes[activeTrack].nodes.map((nodeId, idx) => {
+                        <div key={activeTrack} className="animate-fade-in space-y-1.5">
+                            {journeyStructure.lanes[activeTrack].nodes.map((nodeId) => {
                                 const node = getNode(nodeId);
                                 if (!node) return null;
-                                const accentColor = activeTrack === 'snark' ? 'green' : activeTrack === 'stark' ? 'purple' : 'orange';
                                 return (
-                                    <div key={nodeId} className="relative">
-                                        {idx > 0 && (
-                                            <div className={clsx(
-                                                'absolute -top-0.5 left-3 w-0.5 h-1',
-                                                accentColor === 'green' && 'bg-[var(--accent-green)]/30',
-                                                accentColor === 'purple' && 'bg-[var(--accent-purple)]/30',
-                                                accentColor === 'orange' && 'bg-[var(--accent-orange)]/30'
-                                            )} />
-                                        )}
-                                        <TopicCard
-                                            node={node}
-                                            isSelected={selectedNodeId === nodeId}
-                                            onClick={() => onNodeSelect(node)}
-                                            accentColor={accentColor}
-                                        />
-                                    </div>
+                                    <TopicCard
+                                        key={nodeId}
+                                        node={node}
+                                        isSelected={selectedNodeId === nodeId}
+                                        onClick={() => onNodeSelect(node)}
+                                        accentColor={trackAccent[activeTrack]}
+                                    />
                                 );
                             })}
-                        </motion.div>
-
-                        {/* Convergence indicator */}
-                        <div className="flex items-center justify-center py-2">
-                            <div className="flex-1 h-px bg-[var(--border-color)]" />
-                            <span className="px-3 text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Converge</span>
-                            <div className="flex-1 h-px bg-[var(--border-color)]" />
                         </div>
 
-                        {/* Advanced Section */}
-                        <div className="space-y-1">
-                            <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">
-                                Applications & Beyond
-                            </h3>
+                        <Divider>Then</Divider>
+
+                        <div className="space-y-1.5">
+                            <SectionLabel>Applications &amp; community</SectionLabel>
                             {journeyStructure.advanced.nodes.map((nodeId) => {
                                 const node = getNode(nodeId);
                                 if (!node) return null;
@@ -313,68 +293,83 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({ onNodeSelect, selectedNo
                         </div>
                     </div>
 
-                    {/* Right Column: Resource Display */}
+                    {/* Right column: resources */}
                     <div className="lg:col-span-2">
                         {selectedNode ? (
-                            <motion.div
-                                key={selectedNode.id}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.2 }}
-                                className="space-y-6"
-                            >
-                                {/* Topic Header */}
+                            <div key={selectedNode.id} className="animate-slide-in space-y-6">
                                 <div className="border-b border-[var(--border-color)] pb-6">
-                                    <h2 className="text-2xl font-bold text-white mb-2">
+                                    <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
                                         {selectedNode.title}
                                     </h2>
-                                    <p className="text-[var(--text-secondary)] text-sm">
+                                    <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
                                         {selectedNode.description}
                                     </p>
-                                    <div className="mt-3 flex items-center gap-3">
-                                        <span className="text-xs px-2 py-1 rounded bg-[var(--bg-tertiary)] text-[var(--text-muted)]">
-                                            {selectedNode.resources.length} resources
-                                        </span>
-                                        <span className="text-xs px-2 py-1 rounded bg-[var(--bg-tertiary)] text-[var(--text-muted)]">
-                                            {selectedNode.category}
-                                        </span>
+
+                                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                                        <Chip>{selectedNode.resources.length} resources</Chip>
+                                        <Chip>{selectedNode.category}</Chip>
                                     </div>
+
+                                    <div className="relative mt-4">
+                                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+                                        <input
+                                            type="search"
+                                            value={query}
+                                            onChange={(e) => setQuery(e.target.value)}
+                                            placeholder={`Filter ${selectedNode.resources.length} resources…`}
+                                            aria-label="Filter resources in this topic"
+                                            className="w-full rounded-lg border border-[var(--border-color)] bg-[var(--bg-secondary)] py-2 pl-9 pr-9 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+                                        />
+                                        {query && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setQuery('')}
+                                                aria-label="Clear filter"
+                                                className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+                                            >
+                                                <X className="h-3.5 w-3.5" />
+                                            </button>
+                                        )}
+                                    </div>
+                                    {needle && (
+                                        <p className="mt-2 text-xs text-[var(--text-muted)]">
+                                            {visibleResources.length} of {sortedResources.length} match “{query.trim()}”
+                                        </p>
+                                    )}
                                 </div>
 
-                                {/* Resources List */}
-                                <div className="space-y-1 stagger-children">
-                                    {sortedResources.map((resource) => (
-                                        <a
-                                            key={resource.url}
-                                            href={resource.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="resource-item group flex items-start gap-3 py-3 px-3 -mx-3 rounded border border-transparent hover:border-[var(--border-color)]"
+                                {visibleResources.length > 0 ? (
+                                    <div className="stagger-children space-y-1.5">
+                                        {visibleResources.map((resource) => (
+                                            <ResourceRow key={resource.url} resource={resource} />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="rounded-lg border border-dashed border-[var(--border-color)] px-6 py-12 text-center">
+                                        <p className="text-sm text-[var(--text-secondary)]">
+                                            Nothing in this topic matches “{query.trim()}”.
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={() => setQuery('')}
+                                            className="label mt-3 text-[var(--accent-primary)] hover:underline"
                                         >
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)]">
-                                                        {resource.type}
-                                                    </span>
-                                                </div>
-                                                <h4 className="text-sm font-medium text-white group-hover:text-[var(--accent-green)] transition-colors truncate">
-                                                    {resource.title}
-                                                </h4>
-                                                <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2">
-                                                    {resource.description}
-                                                </p>
-                                            </div>
-                                            <ExternalLink className="w-4 h-4 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-1" />
-                                        </a>
-                                    ))}
-                                </div>
-                            </motion.div>
+                                            Clear filter
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         ) : (
-                            <div className="flex items-center justify-center h-[60vh] text-center">
-                                <div>
-                                    <div className="text-6xl mb-4 opacity-20">📚</div>
-                                    <p className="text-[var(--text-muted)] text-sm">
-                                        Select a topic to view resources
+                            <div className="flex h-[60vh] items-center justify-center text-center">
+                                <div className="max-w-xs">
+                                    <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-[var(--shadow-raised)]">
+                                        <KeySquare className="h-7 w-7 text-[var(--accent-primary)]" />
+                                    </div>
+                                    <p className="text-sm font-medium text-[var(--text-secondary)]">
+                                        Pick a topic to see its resources
+                                    </p>
+                                    <p className="mt-1.5 text-xs text-[var(--text-muted)]">
+                                        {totals.resources} curated links across {totals.topics} topics.
                                     </p>
                                 </div>
                             </div>
@@ -386,69 +381,157 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({ onNodeSelect, selectedNo
     );
 };
 
-// Compact Topic Card Component
+/* ---------------------------------------------------------------- pieces */
+
+const Arrow = () => (
+    <ChevronRight className="h-4 w-4 flex-shrink-0 text-[var(--border-strong)]" aria-hidden />
+);
+
+const SectionLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <h3 className="label mb-2 text-[var(--text-muted)]">{children}</h3>
+);
+
+const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <span className="rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 py-1 text-xs text-[var(--text-muted)]">
+        {children}
+    </span>
+);
+
+const Stat: React.FC<{ value: number; label: string }> = ({ value, label }) => (
+    <span className="flex items-baseline gap-1.5 rounded-lg border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-1.5 shadow-[var(--shadow-card)]">
+        <span className="font-mono text-sm font-bold text-[var(--text-primary)]">{value}</span>
+        <span className="label text-[var(--text-muted)]">{label}</span>
+    </span>
+);
+
+const Divider: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <div className="flex items-center gap-3 py-1">
+        <span className="h-px flex-1 bg-[var(--border-color)]" />
+        <span className="label text-[var(--text-muted)]">{children}</span>
+        <span className="h-px flex-1 bg-[var(--border-color)]" />
+    </div>
+);
+
+const TimelinePill: React.FC<{ label: string; active: boolean; onClick: () => void }> = ({ label, active, onClick }) => (
+    <button
+        onClick={onClick}
+        className={clsx(
+            'timeline-node flex-shrink-0 rounded-md border px-3 py-1.5 text-xs font-medium',
+            active
+                ? 'border-[var(--accent-primary)] bg-[var(--wash-primary)] text-[var(--accent-primary)]'
+                : 'border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]'
+        )}
+    >
+        {label}
+    </button>
+);
+
+const TrackButton: React.FC<{
+    active: boolean;
+    accent: AccentColor;
+    label: string;
+    onClick: () => void;
+    compact?: boolean;
+}> = ({ active, accent, label, onClick, compact }) => (
+    <button
+        onClick={onClick}
+        className={clsx(
+            'flex items-center justify-center gap-1.5 rounded-md font-medium transition-all',
+            compact ? 'px-2 py-1 text-[11px]' : 'flex-1 px-2.5 py-2 text-xs',
+            active ? 'text-[var(--fg)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+        )}
+        style={{
+            ['--fg' as string]: accentVar[accent],
+            background: active ? washVar[accent] : 'transparent',
+            boxShadow: active ? `inset 0 0 0 1px ${accentVar[accent]}` : undefined,
+        }}
+    >
+        <span className="h-1.5 w-1.5 rounded-full" style={{ background: accentVar[accent] }} />
+        {label}
+    </button>
+);
+
+const ResourceRow: React.FC<{ resource: Resource }> = ({ resource }) => {
+    const accent = accentFor(resource.type);
+    const host = hostOf(resource.url);
+
+    return (
+        <a
+            href={resource.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="resource-item group flex items-start gap-3 rounded-lg border border-transparent px-3 py-3"
+        >
+            <span
+                aria-hidden
+                className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full"
+                style={{ background: accent }}
+            />
+            <div className="min-w-0 flex-1">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                    <span
+                        className="label rounded px-1.5 py-0.5"
+                        style={{ color: accent, background: 'var(--bg-tertiary)' }}
+                    >
+                        {resource.type}
+                    </span>
+                    {host && <span className="font-mono text-[10px] text-[var(--text-muted)]">{host}</span>}
+                </div>
+                <h4 className="text-sm font-semibold text-[var(--text-primary)] transition-colors group-hover:text-[var(--accent-primary)]">
+                    {resource.title}
+                </h4>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
+                    {resource.description}
+                </p>
+            </div>
+            <ExternalLink className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100" />
+        </a>
+    );
+};
+
 const TopicCard: React.FC<{
     node: NodeData;
     isSelected: boolean;
     onClick: () => void;
-    accentColor?: 'green' | 'purple' | 'orange';
+    accentColor?: AccentColor;
     stepNumber?: number;
-    compact?: boolean;
-}> = ({ node, isSelected, onClick, accentColor, stepNumber, compact }) => {
-    const borderColor = isSelected
-        ? accentColor === 'purple'
-            ? 'border-[var(--accent-purple)]'
-            : accentColor === 'orange'
-                ? 'border-[var(--accent-orange)]'
-                : 'border-[var(--accent-green)]'
-        : 'border-[var(--border-color)]';
-
-    const glowClass = isSelected
-        ? accentColor === 'purple'
-            ? 'glow-purple'
-            : accentColor === 'orange'
-                ? 'glow-orange'
-                : 'glow-green'
-        : '';
-
-    return (
-        <motion.button
-            onClick={onClick}
-            whileHover={{ x: 4 }}
-            whileTap={{ scale: 0.98 }}
-            className={clsx(
-                'w-full text-left rounded border bg-[var(--bg-secondary)] transition-all',
-                compact ? 'px-2 py-2' : 'px-4 py-3',
-                borderColor,
-                glowClass,
-                'hover:bg-[var(--bg-tertiary)]'
-            )}
-        >
-            <div className="flex items-center justify-between gap-1">
-                {stepNumber && (
-                    <span className={clsx(
-                        'flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold',
+}> = ({ node, isSelected, onClick, accentColor = 'green', stepNumber }) => (
+    <motion.button
+        onClick={onClick}
+        whileHover={{ x: 3 }}
+        whileTap={{ scale: 0.985 }}
+        className={clsx(
+            'w-full rounded-lg border px-3.5 py-3 text-left transition-colors',
+            isSelected
+                ? clsx('bg-[var(--bg-secondary)]', glowClass[accentColor])
+                : 'border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-[var(--shadow-card)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-tertiary)]'
+        )}
+        style={isSelected ? { borderColor: accentVar[accentColor] } : undefined}
+    >
+        <div className="flex items-center justify-between gap-2">
+            {stepNumber !== undefined && (
+                <span
+                    className="grid h-5 w-5 flex-shrink-0 place-items-center rounded-full font-mono text-[10px] font-bold"
+                    style={
                         isSelected
-                            ? 'bg-[var(--accent-green)] text-black'
-                            : 'bg-[var(--bg-tertiary)] text-[var(--text-muted)]'
-                    )}>
-                        {stepNumber}
-                    </span>
-                )}
-                <h4 className={clsx(
-                    'font-medium truncate flex-1',
-                    compact ? 'text-xs' : 'text-sm',
-                    isSelected ? 'text-white' : 'text-[var(--text-secondary)]'
-                )}>
-                    {node.title}
-                </h4>
-                <span className={clsx(
-                    'text-[var(--text-muted)] flex-shrink-0',
-                    compact ? 'text-[9px]' : 'text-[10px] ml-2'
-                )}>
-                    {node.resources.length}
+                            ? { background: accentVar[accentColor], color: 'var(--bg-primary)' }
+                            : { background: 'var(--bg-tertiary)', color: 'var(--text-muted)' }
+                    }
+                >
+                    {stepNumber}
                 </span>
-            </div>
-        </motion.button>
-    );
-};
+            )}
+            <h4
+                className={clsx(
+                    'flex-1 truncate text-sm font-medium',
+                    isSelected ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
+                )}
+            >
+                {node.title}
+            </h4>
+            <span className="flex-shrink-0 font-mono text-[10px] text-[var(--text-muted)]">
+                {node.resources.length}
+            </span>
+        </div>
+    </motion.button>
+);
