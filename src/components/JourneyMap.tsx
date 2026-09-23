@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import { graphData, NodeData, Resource } from '../data/graphData';
@@ -107,6 +107,15 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({ onNodeSelect, selectedNo
     const getNode = (id: string) => nodeMap.get(id);
 
     const selectedNode = selectedNodeId ? getNode(selectedNodeId) : null;
+
+    // A link straight to a topic inside a track should also open that track,
+    // otherwise the tabs disagree with the panel on the right.
+    useEffect(() => {
+        if (!selectedNodeId) return;
+        const owner = (Object.keys(journeyStructure.lanes) as TrackKey[])
+            .find(key => journeyStructure.lanes[key].nodes.includes(selectedNodeId));
+        if (owner) setActiveTrack(owner);
+    }, [selectedNodeId]);
 
     const sortedResources = useMemo(
         () => (selectedNode ? [...selectedNode.resources].sort((a, b) => b.rating - a.rating) : []),
