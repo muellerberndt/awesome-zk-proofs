@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "awesome": "node scripts/generate_awesome_list.mjs",
     "readme": "node scripts/generate_awesome_list.mjs",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "gh-pages -d web"
   },
   "dependencies": {
     "@use-gesture/react": "^10.3.1",
