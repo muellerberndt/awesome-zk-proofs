@@ -209,6 +209,7 @@ Podcasts, newsletters, and community programs for staying current.
 - [ZPrize: accelerate zero-knowledge cryptography](https://www.zprize.io/) - Competition for accelerating ZK cryptography with challenges and resources.
 - [ZK Hash Bounties](https://www.zkhashbounties.info/) - Ethereum Foundation bounty program for ZK hash function cryptanalysis.
 - [ZKHack Discord](https://discord.com/invite/tHXyEbEqVN) - Community Discord for ZK Hack participants and study groups.
+- [Awesome Web3 Grants: Zero-knowledge & privacy](https://github.com/zkprimecapital/awesome-web3-grants#zero-knowledge--privacy) - List of active grant programs that fund ZK and privacy work, including Ethereum Foundation ESP, Aleo and Zcash Community Grants.
 
 ### Security & Exploitation
 Soundness pitfalls, attack surfaces, and real-world exploit learnings.
