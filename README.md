@@ -1,26 +1,20 @@
 # Awesome Zero-Knowledge Proofs
 
-[![Website](https://img.shields.io/badge/View%20Interactive%20Version-floatingpragma.io-00ff41?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyek0xMSAxOS45M2MtMy45NS0uNDktNy0zLjg1LTctNy45MyAwLS42Mi4wOC0xLjIxLjIxLTEuNzlMOSAxNXYxYzAgMS4xLjkgMiAyIDJ2MS45M3ptNi45LTIuNTRjLS4yNi0uODEtMS0xLjM5LTEuOS0xLjM5aC0xdi0zYzAtLjU1LS40NS0xLTEtMUg4di0yaDJjLjU1IDAgMS0uNDUgMS0xVjdoMmMxLjEgMCAyLS45IDItMnYtLjQxYzIuOTMgMS4xOSA1IDQuMDYgNSA3LjQxIDAgMi4wOC0uOCAzLjk3LTIuMSA1LjM5eiIvPjwvc3ZnPg==)](https://floatingpragma.io/)
-[![STARK Lab](https://img.shields.io/badge/Try%20STARK%20Lab-Interactive%20Tutorial-ff79c6?style=for-the-badge)](https://floatingpragma.io/starklab/)
-
-> **[View the web version at floatingpragma.io](https://floatingpragma.io/)** - A visual learning path with curated resources organized by topic.
->
-> **[Try STARK Lab](https://floatingpragma.io/starklab/)** - An interactive, step-by-step tutorial to understand STARK proofs intuitively.
-
----
-
-A curated, annotated list of primers, papers, tools, and systems for zero-knowledge proofs. This README provides a traditional "awesome list" format, while the [web version](https://floatingpragma.io/) offers an interactive learning path with three parallel tracks: **SNARKs**, **STARKs**, and **Bulletproofs/IPA**.
+A curated, annotated list of primers, papers, tools, and systems for zero-knowledge proofs, laid
+out as a learning path from first intuitions through the mathematics to SNARKs, STARKs, and
+Bulletproofs/IPA, and on to implementations and security.
 
 ## Contributing
 
-**This README is generated. Edits to it are overwritten on the next build.**
+Pull requests are welcome. Add your entry to this README, in the section it belongs to, in the
+same format as the entries around it:
 
-Add your resource to [`src/data/graphData.ts`](src/data/graphData.ts) under the node it belongs to,
-then run `npm run awesome` and commit the regenerated `README.md` with your change. A pull request
-that touches only `README.md` cannot reach the website, which is built from the same source data.
-See [CONTRIBUTION.md](CONTRIBUTION.md).
+```markdown
+- [Name](https://example.com) - One sentence on what it is or does.
+```
 
-<!-- AWESOME_LIST:START -->
+The link should be public and working, and the description should say what the resource does
+rather than how good it is.
 
 ### ZKP Intuition & Introductions
 High-level intuition, core ideas, and why zero-knowledge matters.
@@ -94,7 +88,6 @@ Short proofs without trusted setup using inner-product arguments.
 ### Trace, AIR, and FRI (STARK Track)
 Execution traces, AIR, and FRI for transparent proofs.
 
-- [StarkLab](https://floatingpragma.io/starklab/) - An interactive, step-by-step tutorial to understand STARK proofs intuitively.
 - [Anatomy of a STARK](https://aszepieniec.github.io/stark-anatomy/overview) - Multi-part guide to STARK design, AIR, and FRI mechanics.
 - [Brainfuck STARK Tutorial](https://neptune.cash/learn/brainfuck-tutorial/) - Hands-on tutorial building a STARK for Brainfuck programs (uses simple esoteric language to focus on STARK mechanics).
 - [Introduction to SNARKs/STARKs by Eli Ben-Sasson](https://www.youtube.com/watch?v=VUN35BC11Qw) - (YouTube)
@@ -148,7 +141,6 @@ Ceremonies, KZG commitments, and setup tradeoffs.
 Cairo, StarkNet tooling, and STARK-focused stacks.
 
 - [StarkNet: permissionless decentralized ZK-Rollup](https://starkware.co/starknet/) - Article covering StarkNet: permissionless decentralized ZK-Rollup.
-- [StarkLab by FloatingPragma](https://floatingpragma.io/starklab) - Interactive StarkNet/Cairo lab for hands-on exploration and experiments.
 - [Miden: STARK-based zero-knowledge virtual machine](https://github.com/0xPolygonMiden/miden-vm) - Tooling and codebase for Miden: STARK-based zero-knowledge virtual machine.
 - [quark: decentralized state machine with STARK proofs](https://github.com/liamzebedee/quark-blockchain/blob/master/whitepaper.md) - Article covering quark: decentralized state machine with STARK proofs.
 - [Polygon Miden: a STARK-based zkRollup](https://polygon.technology/solutions/polygon-miden/) - Article covering Polygon Miden: a STARK-based zkRollup.
@@ -227,7 +219,6 @@ Soundness pitfalls, attack surfaces, and real-world exploit learnings.
 - [Specialized Zero-Knowledge Proof Failures](https://blog.trailofbits.com/2022/11/29/specialized-zero-knowledge-proof-failures/) - Trail of Bits post analyzing niche ZK failures and missing checks.
 - [Trail of Bits: Zero-Knowledge Blog Category](https://blog.trailofbits.com/categories/zero-knowledge/) - Collection of Trail of Bits posts on zero-knowledge vulnerabilities and audits.
 
-<!-- AWESOME_LIST:END -->
 
 ---
 
